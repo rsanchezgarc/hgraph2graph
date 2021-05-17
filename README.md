@@ -41,7 +41,7 @@ python train_generator.py --train train_processed/ --vocab data/chembl/vocab.txt
 
 4. Sample molecules from a model checkpoint
 ```
-python generate.py --vocab data/chembl/vocab.txt --model ckpt/chembl-pretrained/model.ckpt --nsamples 1000
+python generate.py --vocab data/chembl/vocab.txt --model ckpt/chembl-pretrained/model.ckpt --nsample 1000
 ```
 
 ## Property-guided molcule generation procedure (a.k.a. finetuning)
@@ -50,13 +50,13 @@ The following script loads a trained Chemprop model and finetunes a pre-trained 
 mkdir ckpt/finetune
 python finetune_generator.py --train ${ACTIVE_MOLECULES} --vocab data/chembl/vocab.txt --generative_model ckpt/chembl-pretrained/model.ckpt --chemprop_model ${YOUR_PROPERTY_PREDICTOR} --min_similarity 0.1 --max_similarity 0.5 --nsample 10000 --epoch 10 --threshold 0.5 --save_dir ckpt/finetune
 ```
-Here `${ACTIVE_MOLECULES}` should contain a list of experimentally verified active molecules. 
+Here `${ACTIVE_MOLECULES}` should contain a list of experimentally verified active molecules.
 
-`${YOUR_PROPERTY_PREDICTOR}` should be a directory containing saved chemprop model checkpoint. 
+`${YOUR_PROPERTY_PREDICTOR}` should be a directory containing saved chemprop model checkpoint.
 
 `--max_similarity 0.5` means any novel molecule should have nearest neighbor similarity lower than 0.5 to any known active molecules in ${ACTIVE_MOLECULES}` file.
 
-`--nsample 10000` means to sample 10000 molecules in each epoch. 
+`--nsample 10000` means to sample 10000 molecules in each epoch.
 
 `--threshold 0.5` is the activity threshold. A molecule is considered as active if its predicted chemprop score is greater than 0.5.
 
@@ -90,6 +90,6 @@ python translate.py --test data/qed/valid.txt --vocab data/qed/vocab.txt --model
 ```
 
 ## Polymer generation
-The polymer generation code is in the `polymer/` folder. The polymer generation code is similar to `train_generator.py`, but the substructures are tailored for polymers. 
+The polymer generation code is in the `polymer/` folder. The polymer generation code is similar to `train_generator.py`, but the substructures are tailored for polymers.
 For generating regular drug like molecules, we recommend to use `train_generator.py` in the root directory.
 
