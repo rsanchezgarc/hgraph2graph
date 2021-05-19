@@ -59,8 +59,17 @@ batch_size = args.batch_size
 #print(smiles)
 
 import requests
-url = "https://api.postera.ai/api/v1/synthetic-accessibility/fast-score/batch/"
-headers = {"X-API-KEY": "v1:mAOYT8fFItGktDWNvo35vw"}; 
+
+headers = {"X-API-KEY": "v1:mAOYT8fFItGktDWNvo35vw"}
+
+#url = "https://api.postera.ai/api/v1/synthetic-accessibility/fast-score/batch/"
+#tag = "fastSAScore"
+
+
+url= "https://api.postera.ai/api/v1/synthetic-accessibility/retrosynthesis/batch/"
+tag = "score"
+
+
 
 import importlib
 
@@ -90,9 +99,8 @@ def selecte_best_matches(input_smiles, list_reconstruction_attempts):
               similarity= fingerprint_sim(ori_fp, get_fingerprint(mol2))
             results[j,a] = similarity
     avg_sim = np.mean(results, axis=1)
+    percentile = np.percentile(results, q=90, axis=1)
     best_matches = np.argmax(results, axis=1).tolist()
-    print(results)
-    print(best_matches)
     best_sim = results[range(n_mols), best_matches]
     best_matches = [list_reconstruction_attempts[j][i] for i,j in zip(range(n_mols), best_matches) ]
     
@@ -102,7 +110,7 @@ def score_one_batch(input_smiles, reconstructed_smiles):
     r = requests.post(url, data={"smilesList": input_smiles}, headers=headers)
  
     if r.ok:
-      postera_scores_ = [ 1-x["SAData"]["fastSAScore"] for x in r.json()["results"]]
+      postera_scores_ = [ 1-x["SAData"][tag] for x in r.json()["results"]]
     else:
       postera_scores_ = [-1]*len(reconstructed_smiles)
     print("AE_score RS_score SA_score SMI --> AE_SMI")
@@ -130,7 +138,7 @@ with torch.no_grad():
         
         smiles_attempts_list = []
         print( raw_batch ); print("..........................")
-        for j in range(50):
+        for j in range(20):
             smiles_list = model.reconstruct( batch, greedy=False )
             print(smiles_list)
             smiles_attempts_list.append( smiles_list )
